@@ -1,0 +1,5 @@
+ [mgr]
+prepend_keymap = [        
+ {  on = [ "m" "m" ]; run = "linemode mtimev2"; desc = "Set linemode to modified time"; }, # custom linemode to show time in iso format
+ {  on = [ "m" "c" ]; run = "linemode ctimev2"; desc = "Set linemode to created time"; } # custom linemode to show time in iso format
+ ] 
