@@ -349,6 +349,15 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
+    keys = {
+      {
+        '<leader>w',
+        function()
+          require('which-key').show()
+        end,
+        desc = 'Open Which-Key',
+      },
+    },
   },
 
   -- NOTE: Plugins can specify dependencies.
@@ -956,7 +965,7 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
-    {
+    { -- Enable running lazygit in nvim for easier git management
       'kdheepak/lazygit.nvim',
       lazy = true,
       cmd = {
@@ -970,6 +979,9 @@ require('lazy').setup({
       keys = {
         { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
       },
+    },
+    {
+      'HiPhish/rainbow-delimiters.nvim',
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
