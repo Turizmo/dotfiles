@@ -1,0 +1,46 @@
+{
+    "adaptive_pressure_advance": [
+        "1"
+    ],
+    "adaptive_pressure_advance_model": [
+        "10, 0.055, 1.93, 500\n60, 0.04, 10.77, 500\n10, 0.05, 1.8, 5000\n75, 0.035, 13.46, 5000\n150, 0.03, 26.93, 5000"
+    ],
+    "adaptive_pressure_advance_overhangs": [
+        "1"
+    ],
+    "close_fan_the_first_x_layers": [
+        "1"
+    ],
+    "filament_max_volumetric_speed": [
+        "20"
+    ],
+    "filament_settings_id": [
+        "PETG  0.6 brass HF nozzle"
+    ],
+    "filament_start_gcode": [
+        "; filament start gcode\n\n{if (bed_temperature[current_extruder] >45)||(bed_temperature_initial_layer[current_extruder] >45)}M106 P3 S180\n{elsif (bed_temperature[current_extruder] >50)||(bed_temperature_initial_layer[current_extruder] >50)}M106 P3 S255\n{endif};Prevent PLA from jamming\n\n{if activate_air_filtration[current_extruder] && support_air_filtration}\nM106 P3 S{during_print_exhaust_fan_speed_num[current_extruder]} \n{endif}\n\n{\nglobal Z_OFFSET= 0.065;\n}\nSET_GCODE_OFFSET Z={Z_OFFSET} MOVE=1\nRESPOND TYPE=command MSG='z offset = {Z_OFFSET}'"
+    ],
+    "from": "User",
+    "hot_plate_temp": [
+        "90"
+    ],
+    "hot_plate_temp_initial_layer": [
+        "85"
+    ],
+    "inherits": "Generic PET template @Voron v1 300mm3 0.4 nozzle",
+    "is_custom_defined": "0",
+    "name": "PETG  0.6 brass HF nozzle",
+    "nozzle_temperature": [
+        "245"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "245"
+    ],
+    "pressure_advance": [
+        "0.025"
+    ],
+    "support_material_interface_fan_speed": [
+        "100"
+    ],
+    "version": "1.7.0.2"
+}

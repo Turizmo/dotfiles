@@ -1,0 +1,18 @@
+{
+    "brim_type": "no_brim",
+    "elefant_foot_compensation": "0.1",
+    "enable_support": "1",
+    "from": "User",
+    "inherits": "process template @Voron v1 300mm3 0.4 nozzle",
+    "ironing_type": "no ironing",
+    "is_custom_defined": "0",
+    "name": "ABS Brass HF 0.4 nozzle",
+    "only_one_wall_first_layer": "1",
+    "print_settings_id": "ABS Brass HF 0.4 nozzle",
+    "support_top_z_distance": "0.12",
+    "support_type": "tree(auto)",
+    "version": "1.7.0.2",
+    "wall_loops": "3",
+    "wipe_before_external_loop": "1",
+    "wipe_on_loops": "1"
+}
