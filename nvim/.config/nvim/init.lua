@@ -956,6 +956,21 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    {
+      'kdheepak/lazygit.nvim',
+      lazy = true,
+      cmd = {
+        'LazyGit',
+        'LazyGitConfig',
+        'LazyGitCurrentFile',
+        'LazyGitFilter',
+        'LazyGitFilterCurrentFile',
+      },
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      keys = {
+        { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+      },
+    },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
