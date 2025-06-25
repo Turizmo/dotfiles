@@ -17,6 +17,7 @@ sudo pacman -S stow			# symlinking for dotfiles
 sudo pacman -S xclip			# clipboard manager for X11
 sudo pacman -S zoxide			# easily find the most accessed files
 sudo pacman -S lazygit			# terminal gui for git
+sudo pacman -S qt5ct			# Allow to set a system wide theme for qt5
 
 # Virtualbox guest config:
 sudo pacman -S virtualbox-guest-utils	# Install guest utilities
