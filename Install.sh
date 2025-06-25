@@ -8,13 +8,15 @@ sudo pacman -S ghostty			# terminal emulator
 yay -S libreoffice-fresh		# open source office suite
 yay -S openhantek6022			# oscilloscope software
 yay -S obsidian				# note taking
+yay -S orca-slicer-bin			# slicer for 3d printer
+yay -S openscad-git			# 3d modeller
+sudo pacman -S rust			# Dependency of openscad-lsp
 
 # Addtional tools:
 sudo pacman -S stow			# symlinking for dotfiles
 sudo pacman -S xclip			# clipboard manager for X11
 sudo pacman -S zoxide			# easily find the most accessed files
 sudo pacman -S lazygit			# terminal gui for git
-
 
 # Virtualbox guest config:
 sudo pacman -S virtualbox-guest-utils	# Install guest utilities

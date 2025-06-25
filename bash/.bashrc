@@ -13,6 +13,9 @@ PS1='[\u@\h \W]\$ '
 export EDITOR=nvim
 export VISUAL=nvim
 
+# Set dark theme for QT apps
+export QT_QPA_PLATFORMTHEME=qt5ct
+
 # Make y a shorthand for yazi and make it possible to use yazi to navigate the directory of the terminal
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -21,3 +24,6 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
+
+# initialize zoxide
+eval "$(zoxide init bash)"

@@ -205,6 +205,8 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
+vim.keymap.set('n', '<Leader>o', ':AsyncRun openscad %:p<CR>', { desc = 'Open file in OpenSCAD', noremap = true, silent = false }) -- Map Openscad.
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -683,7 +685,7 @@ require('lazy').setup({
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -692,6 +694,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        openscad_lsp = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -981,7 +984,22 @@ require('lazy').setup({
       },
     },
     {
-      'HiPhish/rainbow-delimiters.nvim',
+      'hiphish/rainbow-delimiters.nvim',
+    },
+    {
+      'epwalsh/obsidian.nvim',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      opts = {
+        workspaces = {
+          {
+            name = 'Test',
+            path = '~/Documents/Test',
+          },
+        },
+      },
+    },
+    {
+      'skywind3000/asyncrun.vim',
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
