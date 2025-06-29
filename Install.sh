@@ -10,6 +10,7 @@ yay -S openhantek6022			# oscilloscope software
 yay -S obsidian				# note taking
 yay -S orca-slicer-bin			# slicer for 3d printer
 yay -S openscad-git			# 3d modeller
+yay -S openscad-bosl2-git		# Openscad library
 sudo pacman -S rust			# Dependency of openscad-lsp
 
 # Addtional tools:
@@ -18,6 +19,8 @@ sudo pacman -S xclip			# clipboard manager for X11
 sudo pacman -S zoxide			# easily find the most accessed files
 sudo pacman -S lazygit			# terminal gui for git
 sudo pacman -S qt5ct			# Allow to set a system wide theme for qt5
+sudo pacman -S xdotool			# Automation tool
+yay -S 7zip				# Compression tool
 
 # Virtualbox guest config:
 sudo pacman -S virtualbox-guest-utils	# Install guest utilities

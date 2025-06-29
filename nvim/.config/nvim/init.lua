@@ -205,7 +205,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
-vim.keymap.set('n', '<Leader>o', ':AsyncRun openscad %:p<CR>', { desc = 'Open file in OpenSCAD', noremap = true, silent = false }) -- Map Openscad.
+vim.keymap.set('n', '<Leader>o', ':AsyncRun QT_QPA_PLATFORMTHEME=qt5ct openscad %:p<CR>', { desc = 'Open file in OpenSCAD', noremap = true, silent = false }) -- Map Openscad.
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

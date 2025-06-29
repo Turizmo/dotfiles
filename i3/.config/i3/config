@@ -208,16 +208,17 @@ bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/i3/scripts/volume_bri
 bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh brightness_down
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+b focus up
-bindsym $mod+o focus right
+bindsym $mod+j focus left exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+k focus down exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+b focus up exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+o focus right exec --no-startup-id ~/.config/i3/mousewarp.sh
 
 # alternatively, you can use the cursor keys:
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+bindsym $mod+Left focus left; exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+Down focus down; exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+Up focus up; exec --no-startup-id ~/.config/i3/mousewarp.sh
+bindsym $mod+Right focus right; exec --no-startup-id ~/.config/i3/mousewarp.sh
+
 
 # move focused window
 bindsym $mod+Shift+j move left
