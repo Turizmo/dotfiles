@@ -122,7 +122,7 @@
         "0"
     ],
     "machine_pause_gcode": "PAUSE",
-    "machine_start_gcode": "{ \n    global HEATSOAK = bed_temperature_initial_layer[initial_extruder] * 1.1;\n    global BED = bed_temperature_initial_layer[initial_extruder];\n    global EXTRUDER = first_layer_temperature[initial_extruder];\n}\nNEOPIXEL_DISPLAY LED=rgb_light TYPE=bed_temp MODE=glow ; Enable extruder leds and show bed temperature in logo\n\n{if HEATSOAK < 110}    ; Set the bed to heatsoak, max 110\nM190 S{HEATSOAK}\n{else}\nM190 S110\n{endif}\n\nG28                    ; Home the printer\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\n\n{if BED > 90}       ; Heatsoak the entire printer for enclosed materials like ABS\nG0 X150 Y150 Z280 F600\nM109 S60            ; Enable the hotend to help circulate the air\nTEMPERATURE_WAIT SENSOR=\"temperature_sensor chamber_temp\" MINIMUM=44\n{endif}\n\n\nM140 S{BED}         ; Set the proper bed temperature\nCLEAN_NOZZLE TEMP={EXTRUDER} ; Run macro for cleaning the nozzle\nATTACH_PROBE        ; Attach probe for heat stabilization\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\nM190 S{BED}         ; Wait for proper bed temperature\nM109 S160           ; Set and wait for medium extruder temperature for consistent bed leveling and meshing\nG4 P120000          ; Wait for temperature to stabilize\n\nG90                 ; Use absolute coordinates\nG32                 ; Home the printer and level the bed\nG90\n\n; Probe adaptive bed mesh\nBED_MESH_CALIBRATE ADAPTIVE=1\n\nPRINT_START\n\n; Set and wait for nozzle to reach temperature\nM109 S{EXTRUDER}",
+    "machine_start_gcode": "{ \n    global HEATSOAK = bed_temperature_initial_layer[initial_extruder] * 1.1;\n    global BED = bed_temperature_initial_layer[initial_extruder];\n    global EXTRUDER = first_layer_temperature[initial_extruder];\n}\nNEOPIXEL_DISPLAY LED=rgb_light TYPE=bed_temp MODE=glow ; Enable extruder leds and show bed temperature in logo\n\n{if HEATSOAK < 110}    ; Set the bed to heatsoak, max 110\nM190 S{HEATSOAK}\n{else}\nM190 S110\n{endif}\n\nG28                    ; Home the printer\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\n\n{if BED > 90}       ; Heatsoak the entire printer for enclosed materials like ABS\nG0 X150 Y150 Z280 F600\nM109 S60            ; Enable the hotend to help circulate the air\nTEMPERATURE_WAIT SENSOR=\"temperature_sensor chamber_temp\" MINIMUM=42\n{endif}\n\n\nM140 S{BED}         ; Set the proper bed temperature\nCLEAN_NOZZLE TEMP={EXTRUDER} ; Run macro for cleaning the nozzle\nATTACH_PROBE        ; Attach probe for heat stabilization\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\nM190 S{BED}         ; Wait for proper bed temperature\nM109 S160           ; Set and wait for medium extruder temperature for consistent bed leveling and meshing\nG4 P120000          ; Wait for temperature to stabilize\n\nG90                 ; Use absolute coordinates\nG32                 ; Home the printer and level the bed\nG90\n\n; Probe adaptive bed mesh\nBED_MESH_CALIBRATE ADAPTIVE=1\n\nPRINT_START\n\n; Set and wait for nozzle to reach temperature\nM109 S{EXTRUDER}",
     "machine_tool_change_time": "0",
     "machine_unload_filament_time": "0",
     "manual_filament_change": "0",
@@ -181,6 +181,9 @@
     ],
     "retract_lift_enforce": [
         "All Surfaces"
+    ],
+    "retract_on_top_layer": [
+        "1"
     ],
     "retract_restart_extra": [
         "0"
