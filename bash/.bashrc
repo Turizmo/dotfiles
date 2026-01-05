@@ -31,3 +31,7 @@ eval "$(zoxide init bash)"
 # Aliases for streamlined system updates
 alias update='yay -Syu --noconfirm --answerdiff None --answeredit None --answerclean None --removemake --ignore openscad-git'
 alias update-all='yay -Syu --noconfirm --answerdiff None --answeredit None --answerclean None --removemake'
+
+# Path for firebase(flutter)
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export CHROME_EXECUTABLE=/usr/bin/chromium
