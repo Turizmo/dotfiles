@@ -1,2 +1,15 @@
 [mgr]
 show_hidden = true
+
+[opener]
+calc = [
+    { run = 'libreoffice --calc %s', orphan = true }
+]
+
+[open]
+prepend_rules = [
+    { url = "*.csv", use = "calc" },
+    { url = "*.ods", use = "calc" },
+    { url = "*.xls", use = "calc" },
+    { url = "*.xlsx", use = "calc" },
+]
