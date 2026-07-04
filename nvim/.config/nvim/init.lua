@@ -242,10 +242,22 @@ vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHo
   end,
 })
 
+-- Force-reload from disk on any external change (e.g., by Claude Code), even when
+-- the buffer has unsaved edits. Without this, `autoread` skips modified buffers and
+-- leaves a stale buffer that a later `:w` would write back, overwriting Claude's changes.
+-- See `:help FileChangedShell` and `:help v:fcs_choice`.
+vim.api.nvim_create_autocmd('FileChangedShell', {
+  desc = 'Always reload externally changed files (Claude Code wins)',
+  group = vim.api.nvim_create_augroup('kickstart-file-changed', { clear = true }),
+  callback = function()
+    vim.v.fcs_choice = 'reload'
+  end,
+})
+
 -- Notify when file is reloaded
 vim.api.nvim_create_autocmd('FileChangedShellPost', {
   desc = 'Notify on external file change',
-  group = vim.api.nvim_create_augroup('kickstart-file-changed', { clear = true }),
+  group = 'kickstart-file-changed',
   callback = function()
     vim.notify('File changed on disk. Buffer reloaded.', vim.log.levels.WARN)
   end,
@@ -379,6 +391,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>m', group = '[M]olten (Jupyter)', mode = { 'n', 'v' } },
       },
     },
     keys = {
@@ -726,6 +739,9 @@ require('lazy').setup({
         --
         openscad_lsp = {},
 
+        pyright = {},
+        ruff = {},
+
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -810,6 +826,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = { 'ruff_format' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -986,7 +1003,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
