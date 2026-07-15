@@ -166,9 +166,40 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
--- Auto-reload files when changed externally (e.g., by Claude Code)
--- See `:help 'autoread'`
+-- Auto-reload files when changed externally (e.g., by Claude Code).
+-- Watching and `checktime` are handled by hotreload.nvim (see
+-- `lua/custom/plugins/hotreload.lua`); `autoread` makes the reload silent
+-- instead of prompting. See `:help 'autoread'`
 vim.o.autoread = true
+
+-- Guard against silently overwriting external edits.
+-- hotreload.nvim (and Vim's own timestamp check) only reload *unmodified*
+-- buffers. When BOTH the buffer and the file on disk have changed (e.g. you
+-- were editing a file that Claude Code then rewrote), Vim would acknowledge
+-- the new mtime and let a later `:w` clobber the on-disk version with no
+-- warning. This handler forces a prompt in that case instead, and otherwise
+-- reloads clean external changes. See `:help FileChangedShell` and
+-- `:help v:fcs_choice`.
+vim.api.nvim_create_autocmd('FileChangedShell', {
+  group = vim.api.nvim_create_augroup('external-edit-guard', { clear = true }),
+  callback = function(args)
+    local file = vim.fn.fnamemodify(args.file, ':~:.')
+    if vim.v.fcs_reason == 'conflict' then
+      -- Unsaved edits AND the file changed on disk: ask what to do so a stray
+      -- `:w` can't silently overwrite the external change.
+      vim.v.fcs_choice = 'ask'
+      vim.notify(file .. ' changed on disk while you have unsaved edits', vim.log.levels.WARN)
+    elseif vim.v.fcs_reason == 'deleted' then
+      -- File removed on disk: keep the buffer contents rather than blanking it.
+      vim.v.fcs_choice = ''
+      vim.notify(file .. ' was deleted on disk (buffer kept)', vim.log.levels.WARN)
+    else
+      -- Unmodified buffer, file changed externally: reload it.
+      vim.v.fcs_choice = 'reload'
+      vim.notify(file .. ' reloaded from disk', vim.log.levels.INFO)
+    end
+  end,
+})
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -227,39 +258,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
-  end,
-})
-
--- Auto-reload files when changed externally (e.g., by Claude Code)
--- Triggers on focus, buffer enter, and after idle (CursorHold)
-vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
-  desc = 'Check for external file changes',
-  group = vim.api.nvim_create_augroup('kickstart-checktime', { clear = true }),
-  callback = function()
-    if vim.fn.mode() ~= 'c' then
-      vim.cmd 'checktime'
-    end
-  end,
-})
-
--- Force-reload from disk on any external change (e.g., by Claude Code), even when
--- the buffer has unsaved edits. Without this, `autoread` skips modified buffers and
--- leaves a stale buffer that a later `:w` would write back, overwriting Claude's changes.
--- See `:help FileChangedShell` and `:help v:fcs_choice`.
-vim.api.nvim_create_autocmd('FileChangedShell', {
-  desc = 'Always reload externally changed files (Claude Code wins)',
-  group = vim.api.nvim_create_augroup('kickstart-file-changed', { clear = true }),
-  callback = function()
-    vim.v.fcs_choice = 'reload'
-  end,
-})
-
--- Notify when file is reloaded
-vim.api.nvim_create_autocmd('FileChangedShellPost', {
-  desc = 'Notify on external file change',
-  group = 'kickstart-file-changed',
-  callback = function()
-    vim.notify('File changed on disk. Buffer reloaded.', vim.log.levels.WARN)
   end,
 })
 
