@@ -83,3 +83,27 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/lates
 
 # Created by `pipx` on 2026-05-05 12:51:29
 export PATH="$PATH:/home/turizmo/.local/bin"
+
+# claude-code: Arch wrapper sets DISABLE_UPDATES=1, which also kills plugin auto-update
+export FORCE_AUTOUPDATE_PLUGINS=1
+
+# Home Assistant (10.0.0.210). Token lives in ~/.config/ha.env (chmod 600, not
+# in dotfiles). /config on the Pi is a symlink to /homeassistant, and sshfs
+# can't take a symlink as its mount root, so mount the real path.
+[[ -f ~/.config/ha.env ]] && . ~/.config/ha.env
+hamount() { mountpoint -q ~/ha-config || sshfs root@10.0.0.210:/homeassistant ~/ha-config \
+  -o reconnect,idmap=user,follow_symlinks,ServerAliveInterval=15; }
+haumount() { fusermount3 -u ~/ha-config; }
+ha-api() { # ha-api GET states | ha-api POST services/automation/reload
+  local method=$1 path=$2; shift 2
+  curl -sS -X "$method" -H "Authorization: Bearer $HA_TOKEN" \
+    -H "Content-Type: application/json" "$HA/api/$path" "$@"; }
+ha-check() { ssh root@10.0.0.210 'ha core check'; }
+# This HAOS logs Core to the journal, not /config/home-assistant.log, so the
+# REST /api/error_log endpoint 404s -- go through the supervisor CLI instead.
+ha-log() { ssh root@10.0.0.210 'ha core logs' | tail -"${1:-50}"; }
+# Git repo lives on the Pi (/homeassistant/.git). Run git there, not over the
+# mount -- sshfs turns every stat into a network round trip.
+ha-git() { local tt=; [ -t 0 ] && tt=-t; ssh $tt root@10.0.0.210 "cd /homeassistant && git $*"; }
+# Mount, then drop claude into the config dir with its CLAUDE.md.
+haclaude() { hamount && (cd ~/ha-config && claude "$@"); }
