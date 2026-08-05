@@ -1,27 +1,26 @@
 {
-    "bottom_shell_layers": "6",
-    "brim_ears_max_angle": "90",
-    "brim_type": "brim_ears",
-    "elefant_foot_compensation": "0.1",
-    "from": "User",
-    "inherits": "process template @Voron v1 300mm3 0.4 nozzle",
-    "ironing_type": "no ironing",
-    "min_length_factor": "2",
-    "name": "ABS Brass HF 0.4 nozzle",
-    "only_one_wall_first_layer": "1",
-    "print_extruder_id": [
-        "1"
-    ],
-    "print_extruder_variant": [
-        "Direct Drive Standard"
-    ],
-    "print_settings_id": "ABS Brass HF 0.4 nozzle",
-    "support_threshold_angle": "28",
-    "support_top_z_distance": "0.12",
-    "support_type": "tree(auto)",
-    "top_shell_layers": "6",
-    "version": "1.7.0.2",
-    "wall_loops": "4",
-    "wipe_before_external_loop": "1",
-    "wipe_on_loops": "1"
+	"bottom_shell_layers": "6",
+	"brim_ears_max_angle": "90",
+	"elefant_foot_compensation": "0.1",
+	"from": "User",
+	"inherits": "process template @Voron v1 300mm3 0.4 nozzle",
+	"ironing_type": "no ironing",
+	"min_length_factor": "2",
+	"name": "ABS Brass HF 0.4 nozzle",
+	"only_one_wall_first_layer": "1",
+	"print_extruder_id": [
+		"1"
+	],
+	"print_extruder_variant": [
+		"Direct Drive Standard"
+	],
+	"print_settings_id": "ABS Brass HF 0.4 nozzle",
+	"support_threshold_angle": "28",
+	"support_top_z_distance": "0.12",
+	"support_type": "tree(auto)",
+	"top_shell_layers": "6",
+	"version": "1.7.0.2",
+	"wall_loops": "4",
+	"wipe_before_external_loop": "1",
+	"wipe_on_loops": "1"
 }
