@@ -172,34 +172,13 @@ vim.o.confirm = true
 -- instead of prompting. See `:help 'autoread'`
 vim.o.autoread = true
 
--- Guard against silently overwriting external edits.
--- hotreload.nvim (and Vim's own timestamp check) only reload *unmodified*
--- buffers. When BOTH the buffer and the file on disk have changed (e.g. you
--- were editing a file that Claude Code then rewrote), Vim would acknowledge
--- the new mtime and let a later `:w` clobber the on-disk version with no
--- warning. This handler forces a prompt in that case instead, and otherwise
--- reloads clean external changes. See `:help FileChangedShell` and
--- `:help v:fcs_choice`.
-vim.api.nvim_create_autocmd('FileChangedShell', {
-  group = vim.api.nvim_create_augroup('external-edit-guard', { clear = true }),
-  callback = function(args)
-    local file = vim.fn.fnamemodify(args.file, ':~:.')
-    if vim.v.fcs_reason == 'conflict' then
-      -- Unsaved edits AND the file changed on disk: ask what to do so a stray
-      -- `:w` can't silently overwrite the external change.
-      vim.v.fcs_choice = 'ask'
-      vim.notify(file .. ' changed on disk while you have unsaved edits', vim.log.levels.WARN)
-    elseif vim.v.fcs_reason == 'deleted' then
-      -- File removed on disk: keep the buffer contents rather than blanking it.
-      vim.v.fcs_choice = ''
-      vim.notify(file .. ' was deleted on disk (buffer kept)', vim.log.levels.WARN)
-    else
-      -- Unmodified buffer, file changed externally: reload it.
-      vim.v.fcs_choice = 'reload'
-      vim.notify(file .. ' reloaded from disk', vim.log.levels.INFO)
-    end
-  end,
-})
+-- No FileChangedShell handler on purpose. Setting `v:fcs_choice` marks the
+-- change as handled, which resets Vim's own timestamp bookkeeping and disables
+-- the W12/E13 "file changed since reading it" prompt at `:w` -- the exact
+-- protection we want. A BufWritePre guard cannot replace it either: an error in
+-- a BufWritePre callback does NOT abort the write, so the file is clobbered
+-- anyway. Default behaviour: unmodified buffers reload silently (autoread),
+-- conflicts prompt. See `:help FileChangedShell`, `:help v:fcs_choice`.
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -240,12 +219,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
-vim.keymap.set(
-  'n',
-  '<Leader>o',
-  ':AsyncRun QT_QPA_PLATFORMTHEME=qt5ct OPENSCADPATH=/usr/share/openscad/libraries openscad %:p<CR>',
-  { desc = 'Open file in OpenSCAD', noremap = true, silent = false }
-) -- Map Openscad.
+vim.keymap.set('n', '<Leader>o', ':AsyncRun QT_QPA_PLATFORMTHEME=qt5ct OPENSCADPATH=/usr/share/openscad/libraries openscad %:p<CR>', { desc = 'Open file in OpenSCAD', noremap = true, silent = false }) -- Map Openscad.
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -260,6 +234,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+
+-- Set terminal window title to current file so terminal emulator tabs show it
+vim.o.title = true
+vim.o.titlestring = '%t'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -812,7 +790,13 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        -- openscad: no conform formatter is configured for it, so `lsp_format
+        -- = 'fallback'` handed the save to openscad-lsp, which returns edits
+        -- computed against its own stale copy of the document. After an
+        -- external reload (Claude Code editing the file) those edits overwrite
+        -- the buffer between BufWritePre and BufWritePost, silently restoring
+        -- pre-reload text with only the local edit on top. Traced 2026-08-10.
+        local disable_filetypes = { c = true, cpp = true, openscad = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else

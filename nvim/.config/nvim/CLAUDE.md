@@ -25,7 +25,8 @@ lua/
 - `:Lazy update` - Update all plugins
 - `:Mason` - LSP/tool installer UI
 - `:checkhealth` - Verify Neovim requirements
-- `<leader>o` - Open current file in OpenSCAD (custom binding)
+- `<leader>o` - Preview current file: OpenSCAD for `.scad`, CadQuery for `.py` (custom binding). Python runs in a persistent terminal REPL (split window) so `cadquery`/`ocp_vscode` import once, not per save; each write `exec()`s the file into that same process. It also re-runs the preview on every write of that buffer.
+- `<leader>O` - Stop the preview-on-write tracking
 
 ## Plugin Management
 
