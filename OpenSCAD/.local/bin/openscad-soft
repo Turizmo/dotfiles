@@ -1,0 +1,11 @@
+#!/bin/bash
+# Run the Flatpak OpenSCAD build with Mesa's llvmpipe software renderer.
+#
+# In the VirtualBox VMSVGA guest with 3D acceleration on, OpenGL goes through
+# the vmwgfx/SVGA3D driver to the host GPU. OpenCSG's depth and stencil buffer
+# tricks render wrongly on that path, so the F5 preview shows missing
+# differences and artifacts. llvmpipe draws it correctly on the CPU, at the
+# cost of speed on large models. Only OpenSCAD is affected; the rest of the
+# desktop keeps the accelerated driver.
+
+exec flatpak run --env=LIBGL_ALWAYS_SOFTWARE=1 org.openscad.OpenSCAD "$@"

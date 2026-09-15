@@ -1,0 +1,67 @@
+#!/bin/bash
+# Open a .scad file in the Flatpak OpenSCAD build showing only the 3D view,
+# the toolbar and the Console. OpenSCAD is started through openscad-soft, which
+# forces software OpenGL so the preview renders correctly in the VirtualBox VM.
+#
+# Why the layout has to be driven at runtime (build 2026.07.01.fp, git 34a81df5b):
+#
+#   * The "view/hide*" settings are write-only in this build. Nothing reads them
+#     back to set dock visibility; they survive only as Preferences defaults and
+#     in the --reset-window-settings key list. Dock visibility comes purely from
+#     "window/state".
+#
+#   * "window/state" can never record a hidden dock. MainWindow::eventFilter
+#     (src/gui/MainWindow.cc:1558) calls saveWindowStateOnClose() on every
+#     non-spontaneous QEvent::Close received by a Dock, and that function latches
+#     on a windowStateSaved flag. Hiding the first dock therefore writes the
+#     still-everything-visible layout and blocks all later saves, including the
+#     one at application close.
+#
+# So: strip the stale "state=" entry to get a deterministic startup layout, then
+# close the unwanted docks over D-Bus. D-Bus also gives a real readiness signal,
+# which the old xdotool version had to approximate with sleeps.
+#
+# The D-Bus input driver needs all three of:
+#   [feature] input-driver-dbus=true   (Feature::ExperimentalInputDriverDBus)
+#   [input]   enableDriverDBUS=true    (Settings::inputEnableDriverDBUS, default false)
+#   flatpak override --user --socket=session-bus \
+#       --own-name=org.openscad.OpenSCAD org.openscad.OpenSCAD
+#
+# This build also has an "AI Chat" dock created without an objectName, so Qt
+# cannot serialise it. Stripping "state=" sidesteps that too.
+
+set -u
+
+conf="$HOME/.var/app/org.openscad.OpenSCAD/config/OpenSCAD/OpenSCAD.conf"
+dest=org.openscad.OpenSCAD
+path=/org/openscad/OpenSCAD/Application
+
+call() {
+    gdbus call --session --dest "$dest" --object-path "$path" \
+        --method org.openscad.OpenSCAD."$1" "${@:2}" >/dev/null 2>&1
+}
+
+# An instance already running owns the bus name and has its layout set already.
+if call getActions; then
+    setsid nohup "$HOME/.local/bin/openscad-soft" "$1" >/dev/null 2>&1 &
+    exit 0
+fi
+
+[ -f "$conf" ] && sed -i '/^state=@ByteArray/d' "$conf"
+
+setsid nohup "$HOME/.local/bin/openscad-soft" "$1" >/dev/null 2>&1 &
+
+for _ in $(seq 1 60); do
+    call getActions && break
+    sleep 0.5
+done
+call getActions || { echo "openscad-dark: D-Bus service never appeared" >&2; exit 1; }
+
+# Startup layout with no saved state (MainWindow.cc:4018): Editor visible,
+# Customizer and Viewport-Control hidden, and Console/Error-Log/Font List/
+# Color List/Animate tabified with Console raised. Close everything but the
+# Console. These actions are checkable, so each call is a toggle; the starting
+# state is only deterministic because "state=" was stripped above.
+for action in Editor ErrorLog FontList ColorList Animate; do
+    call action "windowActionToggle$action"
+done
