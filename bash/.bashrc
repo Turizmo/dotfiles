@@ -33,6 +33,7 @@ update() {
   # System + AUR update; bail out if either fails so we don't clean a broken state
   sudo pacman -Syu --noconfirm || return
   yay -Syu --noconfirm || return
+  command -v flatpak >/dev/null 2>&1 && flatpak update -y
 
   # pacman's sandboxed downloader (alpm user) can leave behind stale download-*
   # temp directories. -Scc only removes files, so it errors on each one and exits

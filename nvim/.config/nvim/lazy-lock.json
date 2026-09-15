@@ -22,6 +22,7 @@
   "nvim-lspconfig": { "branch": "master", "commit": "43ed3797b266e1ee8d222e491379ad471c9d3146" },
   "nvim-treesitter": { "branch": "master", "commit": "cf12346a3414fa1b06af75c79faebe7f76df080a" },
   "obsidian.nvim": { "branch": "main", "commit": "726b60c89f4bafef267a714ea1faa1335bdd414a" },
+  "openscad-ls.nvim": { "branch": "main", "commit": "818545c03a8506ac4dbdc86fe5a7ff2f772aeef0" },
   "plenary.nvim": { "branch": "master", "commit": "74b06c6c75e4eeb3108ec01852001636d85a932b" },
   "rainbow-delimiters.nvim": { "branch": "master", "commit": "012f1480cd9a5fc99fce7678e0a536421a53fc46" },
   "telescope-fzf-native.nvim": { "branch": "main", "commit": "b25b749b9db64d375d782094e2b9dce53ad53a40" },

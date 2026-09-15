@@ -219,7 +219,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
-vim.keymap.set('n', '<Leader>o', ':AsyncRun QT_QPA_PLATFORMTHEME=qt5ct OPENSCADPATH=/usr/share/openscad/libraries openscad %:p<CR>', { desc = 'Open file in OpenSCAD', noremap = true, silent = false }) -- Map Openscad.
+vim.keymap.set('n', '<Leader>o', ':AsyncRun ~/.local/bin/openscad-dark %:p<CR>', { desc = 'Open file in OpenSCAD (dark)', noremap = true, silent = false }) -- Map Openscad.
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -713,7 +713,13 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-        openscad_lsp = {},
+        -- Replaced by the in-process Lua server in
+        -- `lua/custom/plugins/openscad-ls.lua`. Leaving this enabled would
+        -- start a second server on every .scad buffer and the two would fight
+        -- over formatting. Re-enable this line (and disable the other plugin)
+        -- to go back. The Mason binary is still installed:
+        -- `:MasonUninstall openscad-lsp` once the replacement has proven out.
+        -- openscad_lsp = {},
 
         pyright = {},
         ruff = {},
@@ -756,6 +762,12 @@ require('lazy').setup({
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
+        -- mason-lspconfig enables every *installed* server, whether or not it
+        -- appears in the `servers` table above, so commenting a server out
+        -- there is not enough to stop it. openscad_lsp is replaced by the
+        -- in-process server in `lua/custom/plugins/openscad-ls.lua`; two
+        -- servers on one .scad buffer fight over formatting.
+        automatic_enable = { exclude = { 'openscad_lsp' } },
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}

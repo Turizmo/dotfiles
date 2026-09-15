@@ -5,9 +5,13 @@ show_hidden = true
 calc = [
     { run = 'libreoffice --calc %s', orphan = true }
 ]
+python = [
+    { run = 'python3 "$@"; echo; read -n1 -p "Press any key..."', block = true, desc = "Run with python3" }
+]
 
 [open]
 prepend_rules = [
+    { url = "*.py", use = [ "python", "edit", "reveal" ] },
     { url = "*.csv", use = "calc" },
     { url = "*.ods", use = "calc" },
     { url = "*.xls", use = "calc" },

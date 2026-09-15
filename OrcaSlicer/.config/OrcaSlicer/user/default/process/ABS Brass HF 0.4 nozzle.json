@@ -2,6 +2,7 @@
 	"bottom_shell_layers": "6",
 	"brim_ears_max_angle": "90",
 	"elefant_foot_compensation": "0.1",
+	"enable_support": "1",
 	"from": "User",
 	"inherits": "process template @Voron v1 300mm3 0.4 nozzle",
 	"ironing_type": "no ironing",
@@ -20,7 +21,7 @@
 	"support_type": "tree(auto)",
 	"top_shell_layers": "6",
 	"version": "1.7.0.2",
-	"wall_loops": "4",
+	"wall_loops": "3",
 	"wipe_before_external_loop": "1",
 	"wipe_on_loops": "1"
 }

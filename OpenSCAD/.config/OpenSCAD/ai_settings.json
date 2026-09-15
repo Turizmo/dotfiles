@@ -1,0 +1,51 @@
+{
+    "activeProfile": "OpenAI GPT-4",
+    "profiles": {
+        "Anthropic Claude": {
+            "apiKey": "",
+            "endpoint": "https://api.anthropic.com/v1",
+            "params": {
+                "anthropic-version": "2023-06-01",
+                "context_limit": 10,
+                "default_prompt": "Create a sphere with radius 10 and detail level $fn=50.",
+                "max_tokens": 2048,
+                "model": "claude-3-5-sonnet-latest",
+                "system_prompt": "You are an expert OpenSCAD designer. Write clean, elegant, and efficient OpenSCAD code.",
+                "temperature": 0.7
+            }
+        },
+        "Custom / Local LLM": {
+            "apiKey": "",
+            "endpoint": "http://localhost:8080/v1",
+            "params": {
+                "context_limit": 10,
+                "max_tokens": 2048,
+                "model": "custom",
+                "system_prompt": "You are an expert OpenSCAD designer. Write clean, elegant, and efficient OpenSCAD code.",
+                "temperature": 0.7
+            }
+        },
+        "Ollama Local": {
+            "apiKey": "",
+            "endpoint": "http://localhost:11434/v1",
+            "params": {
+                "context_limit": 10,
+                "max_tokens": 2048,
+                "model": "deepseek-coder",
+                "system_prompt": "You are an expert OpenSCAD designer. Write clean, elegant, and efficient OpenSCAD code.",
+                "temperature": 0.7
+            }
+        },
+        "OpenAI GPT-4": {
+            "apiKey": "",
+            "endpoint": "https://api.openai.com/v1",
+            "params": {
+                "context_limit": 10,
+                "max_tokens": 2048,
+                "model": "gpt-4o",
+                "system_prompt": "You are an expert OpenSCAD designer. Write clean, elegant, and efficient OpenSCAD code.",
+                "temperature": 0.7
+            }
+        }
+    }
+}
