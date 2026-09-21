@@ -196,6 +196,9 @@ bindsym $mod+Shift+r restart
 
 # keybinding in fancy rofi (automated):
 bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
+
+# show/hide the QMK keymap cheat sheet
+bindsym $mod+F1 exec --no-startup-id ~/.local/bin/qmk-keymap-overlay
 # alternative
 # keybinding list in editor:
 # bindsym $mod+F1 exec --no-startup-id xed ~/.config/i3/keybindings
@@ -448,6 +451,9 @@ exec --no-startup-id /usr/bin/dunst
 # force tiling for all windows
 for_window [class=".*"] floating disable
 for_window [window_type="dialog"] floating disable
+
+# QMK keymap overlay (toggle with $mod+F1)
+for_window [class="qmk-keymap-overlay"] floating enable, border none, resize set 1400 620, move position center, sticky enable
 
 # set floating (nontiling) for apps needing it
 #for_window [class="Yad" instance="yad"] floating enable
