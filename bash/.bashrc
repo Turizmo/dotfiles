@@ -77,6 +77,7 @@ alias update-all='yay -Syu --noconfirm --answerdiff None --answeredit None --ans
 # Path for firebase(flutter)
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 export CHROME_EXECUTABLE=/usr/bin/chromium
+export BROWSER=zen-browser
 
 # Android SDK
 export ANDROID_HOME=/opt/android-sdk
