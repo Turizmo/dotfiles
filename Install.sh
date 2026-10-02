@@ -28,6 +28,7 @@ sudo pacman -S zoxide			# easily find the most accessed files
 sudo pacman -S lazygit			# terminal gui for git
 sudo pacman -S qt5ct			# Allow to set a system wide theme for qt5
 sudo pacman -S xdotool			# Automation tool
+sudo pacman -S ttf-nerd-fonts-symbols	# icons in the i3 bar (workspace-names.py)
 yay -S 7zip				# Compression tool
 
 

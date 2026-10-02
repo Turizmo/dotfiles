@@ -71,76 +71,76 @@ bindsym $mod+Tab workspace next
 bindsym $mod+Shift+Tab workspace prev
 
 # switch to workspace
-bindcode $mod+10    workspace  $ws1
-bindcode $mod+11    workspace  $ws2
-bindcode $mod+12    workspace  $ws3
-bindcode $mod+13    workspace  $ws4
-bindcode $mod+14    workspace  $ws5
-bindcode $mod+15    workspace  $ws6
-bindcode $mod+16    workspace  $ws7
-bindcode $mod+17    workspace  $ws8
-bindcode $mod+18    workspace  $ws9
-bindcode $mod+19    workspace  $ws10
+bindcode $mod+10    workspace number $ws1
+bindcode $mod+11    workspace number $ws2
+bindcode $mod+12    workspace number $ws3
+bindcode $mod+13    workspace number $ws4
+bindcode $mod+14    workspace number $ws5
+bindcode $mod+15    workspace number $ws6
+bindcode $mod+16    workspace number $ws7
+bindcode $mod+17    workspace number $ws8
+bindcode $mod+18    workspace number $ws9
+bindcode $mod+19    workspace number $ws10
 
 # switch to workspace with numpad keys
-bindcode $mod+87 workspace $ws1
-bindcode $mod+88 workspace $ws2
-bindcode $mod+89 workspace $ws3
-bindcode $mod+83 workspace $ws4
-bindcode $mod+84 workspace $ws5
-bindcode $mod+85 workspace $ws6
-bindcode $mod+79 workspace $ws7
-bindcode $mod+80 workspace $ws8
-bindcode $mod+81 workspace $ws9
-bindcode $mod+90 workspace $ws10
+bindcode $mod+87 workspace number $ws1
+bindcode $mod+88 workspace number $ws2
+bindcode $mod+89 workspace number $ws3
+bindcode $mod+83 workspace number $ws4
+bindcode $mod+84 workspace number $ws5
+bindcode $mod+85 workspace number $ws6
+bindcode $mod+79 workspace number $ws7
+bindcode $mod+80 workspace number $ws8
+bindcode $mod+81 workspace number $ws9
+bindcode $mod+90 workspace number $ws10
 
 # switch to workspace with numlock numpad keys
-bindcode $mod+Mod2+87 workspace $ws1
-bindcode $mod+Mod2+88 workspace $ws2
-bindcode $mod+Mod2+89 workspace $ws3
-bindcode $mod+Mod2+83 workspace $ws4
-bindcode $mod+Mod2+84 workspace $ws5
-bindcode $mod+Mod2+85 workspace $ws6
-bindcode $mod+Mod2+79 workspace $ws7
-bindcode $mod+Mod2+80 workspace $ws8
-bindcode $mod+Mod2+81 workspace $ws9
-bindcode $mod+Mod2+90 workspace $ws10
+bindcode $mod+Mod2+87 workspace number $ws1
+bindcode $mod+Mod2+88 workspace number $ws2
+bindcode $mod+Mod2+89 workspace number $ws3
+bindcode $mod+Mod2+83 workspace number $ws4
+bindcode $mod+Mod2+84 workspace number $ws5
+bindcode $mod+Mod2+85 workspace number $ws6
+bindcode $mod+Mod2+79 workspace number $ws7
+bindcode $mod+Mod2+80 workspace number $ws8
+bindcode $mod+Mod2+81 workspace number $ws9
+bindcode $mod+Mod2+90 workspace number $ws10
 
 # move focused container to workspace
-bindcode $mod+Shift+10    move container to workspace  $ws1
-bindcode $mod+Shift+11    move container to workspace  $ws2
-bindcode $mod+Shift+12    move container to workspace  $ws3
-bindcode $mod+Shift+13    move container to workspace  $ws4
-bindcode $mod+Shift+14    move container to workspace  $ws5
-bindcode $mod+Shift+15    move container to workspace  $ws6
-bindcode $mod+Shift+16    move container to workspace  $ws7
-bindcode $mod+Shift+17    move container to workspace  $ws8
-bindcode $mod+Shift+18    move container to workspace  $ws9
-bindcode $mod+Shift+19    move container to workspace  $ws10
+bindcode $mod+Shift+10    move container to workspace number $ws1
+bindcode $mod+Shift+11    move container to workspace number $ws2
+bindcode $mod+Shift+12    move container to workspace number $ws3
+bindcode $mod+Shift+13    move container to workspace number $ws4
+bindcode $mod+Shift+14    move container to workspace number $ws5
+bindcode $mod+Shift+15    move container to workspace number $ws6
+bindcode $mod+Shift+16    move container to workspace number $ws7
+bindcode $mod+Shift+17    move container to workspace number $ws8
+bindcode $mod+Shift+18    move container to workspace number $ws9
+bindcode $mod+Shift+19    move container to workspace number $ws10
 
 # move focused container to workspace with numpad keys
-bindcode $mod+Shift+Mod2+87 	move container to workspace  $ws1
-bindcode $mod+Shift+Mod2+88 	move container to workspace  $ws2
-bindcode $mod+Shift+Mod2+89 	move container to workspace  $ws3
-bindcode $mod+Shift+Mod2+83 	move container to workspace  $ws4
-bindcode $mod+Shift+Mod2+84 	move container to workspace  $ws5
-bindcode $mod+Shift+Mod2+85 	move container to workspace  $ws6
-bindcode $mod+Shift+Mod2+79 	move container to workspace  $ws7
-bindcode $mod+Shift+Mod2+80 	move container to workspace  $ws8
-bindcode $mod+Shift+Mod2+81 	move container to workspace  $ws9
-bindcode $mod+Shift+Mod2+90 	move container to workspace  $ws10
+bindcode $mod+Shift+Mod2+87 	move container to workspace number $ws1
+bindcode $mod+Shift+Mod2+88 	move container to workspace number $ws2
+bindcode $mod+Shift+Mod2+89 	move container to workspace number $ws3
+bindcode $mod+Shift+Mod2+83 	move container to workspace number $ws4
+bindcode $mod+Shift+Mod2+84 	move container to workspace number $ws5
+bindcode $mod+Shift+Mod2+85 	move container to workspace number $ws6
+bindcode $mod+Shift+Mod2+79 	move container to workspace number $ws7
+bindcode $mod+Shift+Mod2+80 	move container to workspace number $ws8
+bindcode $mod+Shift+Mod2+81 	move container to workspace number $ws9
+bindcode $mod+Shift+Mod2+90 	move container to workspace number $ws10
 
 # move focused container to workspace with numpad keys
-bindcode $mod+Shift+87 	 move container to workspace  $ws1
-bindcode $mod+Shift+88 	 move container to workspace  $ws2
-bindcode $mod+Shift+89 	 move container to workspace  $ws3
-bindcode $mod+Shift+83 	 move container to workspace  $ws4
-bindcode $mod+Shift+84 	 move container to workspace  $ws5
-bindcode $mod+Shift+85 	 move container to workspace  $ws6
-bindcode $mod+Shift+79 	 move container to workspace  $ws7
-bindcode $mod+Shift+80 	 move container to workspace  $ws8
-bindcode $mod+Shift+81 	 move container to workspace  $ws9
-bindcode $mod+Shift+90 	 move container to workspace  $ws10
+bindcode $mod+Shift+87 	 move container to workspace number $ws1
+bindcode $mod+Shift+88 	 move container to workspace number $ws2
+bindcode $mod+Shift+89 	 move container to workspace number $ws3
+bindcode $mod+Shift+83 	 move container to workspace number $ws4
+bindcode $mod+Shift+84 	 move container to workspace number $ws5
+bindcode $mod+Shift+85 	 move container to workspace number $ws6
+bindcode $mod+Shift+79 	 move container to workspace number $ws7
+bindcode $mod+Shift+80 	 move container to workspace number $ws8
+bindcode $mod+Shift+81 	 move container to workspace number $ws9
+bindcode $mod+Shift+90 	 move container to workspace number $ws10
 
 # resize window (you can also use the mouse for that):
 #mode "resize" {
@@ -391,6 +391,9 @@ exec --no-startup-id ~/.screenlayout/monitor.sh
 # VirtualBox guest: follow the VM window size (no-op outside a VMSVGA VM)
 exec --no-startup-id ~/.config/i3/vbox-autoresize.sh
 
+# rename workspaces to show which apps are on them (icons + terminal commands)
+exec --no-startup-id ~/.config/i3/workspace-names.py
+
 # set wallpaper
 # exec --no-startup-id sleep 2 && nitrogen --restore
 exec --no-startup-id sleep 1 && feh --bg-fill /usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png
@@ -510,7 +513,7 @@ client.urgent		    	$urgentred	$urgentred	$white		$yellowbrown	$yellowbrown
 # Start i3bar to display a workspace bar
 # (plus the system information i3status finds out, if available)
 bar {
-		font pango: Noto Sans Regular 10
+		font pango: Noto Sans, Symbols Nerd Font 10
 		status_command i3blocks -c ~/.config/i3/i3blocks.conf
 	    	position bottom
 #	    	i3bar_command i3bar --transparency
@@ -522,7 +525,8 @@ bar {
 # When strip_workspace_numbers is set to yes,
 # any workspace that has a name of the form
 # “[n][:][NAME]” will display only the name.
-strip_workspace_numbers no
+# workspace-names.py draws the tiles itself; see DESKTOP_SEPARATOR there
+strip_workspace_numbers yes
 ##strip_workspace_name no
 
 		    colors {
@@ -530,9 +534,9 @@ strip_workspace_numbers no
 		    background         $darkgrey
 		    statusline         $white
 #                          		border 		        bg		txt		indicator
-		focused_workspace	$mediumgrey	   	$grey		$darkgrey	$purple
-		active_workspace	$lightblue      	$mediumgrey	$darkgrey	$purple
-		inactive_workspace	$darkgrey   		$darkgrey	$grey		$purple
+		focused_workspace	$darkgrey		$darkgrey	$grey		$purple
+		active_workspace	$darkgrey		$darkgrey	$grey		$purple
+		inactive_workspace	$darkgrey		$darkgrey	$grey		$purple
 		urgent_workspace	$urgentred	    	$urgentred	$white		$purple
 	}
 }

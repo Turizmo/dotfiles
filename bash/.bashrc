@@ -109,3 +109,19 @@ ha-log() { ssh root@10.0.0.210 'ha core logs' | tail -"${1:-50}"; }
 ha-git() { local tt=; [ -t 0 ] && tt=-t; ssh $tt root@10.0.0.210 "cd /homeassistant && git $*"; }
 # Mount, then drop claude into the config dir with its CLAUDE.md.
 haclaude() { hamount && (cd ~/ha-config && claude "$@"); }
+
+# Terminal title = name of the running command (e.g. "nvim"), so the i3 bar can
+# show it (see i3/.config/i3/workspace-names.py). /etc/bash.bashrc puts the
+# title back to user@host:dir at each prompt. Keep this block last so it runs
+# after the other PROMPT_COMMAND hooks (zoxide etc.).
+__title_ready=
+__title_preexec() {
+  [[ -n $__title_ready && -z $COMP_LINE ]] || return
+  __title_ready=
+  local -a w
+  read -ra w <<< "$BASH_COMMAND"
+  while [[ ${w[0]} == *=* || ${w[0]} == sudo || ${w[0]} == -* ]]; do w=("${w[@]:1}"); done
+  printf '\e]0;%s\a' "${w[0]##*/}"
+}
+trap __title_preexec DEBUG
+PROMPT_COMMAND+=('__title_ready=1')
