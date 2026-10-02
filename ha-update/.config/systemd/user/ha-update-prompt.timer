@@ -1,0 +1,9 @@
+[Unit]
+Description=Ask about Home Assistant updates (weekly, retried hourly)
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

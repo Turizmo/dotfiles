@@ -1,0 +1,6 @@
+[Unit]
+Description=Ask whether to update Home Assistant
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/ha-update-prompt

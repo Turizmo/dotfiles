@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Friday reminder: if Home Assistant has pending updates, show a desktop
+# notification. "Update now" opens an interactive Claude session that does it.
+# The timer fires hourly; this runs once per week, from Friday 10:00 onward,
+# as soon as HA answers. `ha-update-prompt --test` shows the popup right away.
+set -euo pipefail
+test=${1:-}
+. ~/.config/ha.env
+
+stamp=~/.local/state/ha-update-prompt.last
+if [[ $(date +%u) == 5 && $(date +%H) -ge 10 ]]; then
+  due=$(date -d 'today 10:00' +%s)
+else
+  due=$(date -d 'last fri 10:00' +%s)
+fi
+[[ -z $test && $(cat "$stamp" 2>/dev/null || echo 0) -ge $due ]] && exit 0
+
+# Stay quiet when HA is not reachable (PC away from home, Pi down); retry next hour.
+curl -sf -m 10 -o /dev/null -H "Authorization: Bearer $HA_TOKEN" "$HA/api/" || exit 0
+[[ -n $test ]] || { mkdir -p "${stamp%/*}" && date +%s >"$stamp"; }
+
+pending=$(curl -sS -m 20 -H "Authorization: Bearer $HA_TOKEN" "$HA/api/states" |
+  jq -r '.[] | select(.entity_id | startswith("update.")) | select(.state == "on")
+         | "\(.attributes.title // .entity_id): \(.attributes.installed_version) -> \(.attributes.latest_version)"')
+[[ -z $pending && -n $test ]] && pending="(test) no real updates pending"
+[[ -z $pending ]] && exit 0
+
+# yad, not notify-send: dunst hides action buttons behind a context menu.
+yad --title="Home Assistant updates" --center --on-top --fixed --width=420 \
+  --image=system-software-update --text="<b>Home Assistant updates ($(wc -l <<<"$pending"))</b>
+
+$pending" --button="Not now:1" --button="Update now:0" || exit 0
+
+read -r -d '' prompt <<'PROMPT' || true
+Update everything in Home Assistant. If no updates are pending, say so and stop.
+
+1. Read the changelog for every pending update before installing anything:
+   - Core: the release notes for every version between installed and latest,
+     especially the "Backward-incompatible changes" section.
+   - OS and Supervisor: GitHub release notes.
+   - Add-ons: the add-on changelog (Supervisor API /addons/<slug>/changelog).
+   - HACS cards: GitHub releases.
+   Compare each change against this config (YAML here, integrations in use,
+   zigbee2mqtt config).
+2. Look hardest for changes that could stop HA from booting or stop me from
+   reaching the Pi, because those are hard to fix remotely: OS/network/boot
+   changes, SSH add-on (port, auth, keys, options), cloudflared and http
+   (trusted_proxies, ip_ban), YAML keys that become errors, removed integrations.
+3. Report per update: "safe" or the exact risk and what you change. Fix config
+   ahead of time where possible, then go on without asking. Stop and wait for
+   my go only for a risk you suspect you cannot solve on your own, such as one
+   that could lock us out of the Pi or stop HA from booting.
+4. Make a full backup (ha backups new). Install the updates one at a
+   time, add-ons with backup. Order: cards, add-ons, Supervisor, Core, OS.
+   SSH add-on last of the add-ons. Wait for HA to answer after each restart.
+5. Verify: no updates left, ha core check passes, add-ons started, SSH still
+   works, no automations or scripts newly unavailable, no new errors in
+   ha core logs. If something broke, fix it and commit the fix with ha-git.
+   Report what you did.
+PROMPT
+
+exec xfce4-terminal --title="HA update" -x bash -c '
+  . ~/.config/ha.env
+  mountpoint -q ~/ha-config || sshfs root@10.0.0.210:/homeassistant ~/ha-config \
+    -o reconnect,idmap=user,follow_symlinks,ServerAliveInterval=15
+  cd ~/ha-config && claude "$1"
+  exec bash' _ "$prompt"
