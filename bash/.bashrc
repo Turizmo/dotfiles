@@ -62,6 +62,9 @@ update() {
     sudo pacman -Rns --noconfirm $orphans
   fi
 
+  # Remove flatpak runtimes no installed app depends on anymore
+  command -v flatpak >/dev/null 2>&1 && flatpak uninstall --unused -y
+
   # Reboot if the kernel was updated. Arch/EndeavourOS doesn't create
   # /run/reboot-required, and kernel version strings (uname -r vs pacman -Q)
   # don't match, so instead check whether the running kernel's modules still
