@@ -57,6 +57,13 @@ for _ in $(seq 1 60); do
 done
 call getActions || { echo "openscad-dark: D-Bus service never appeared" >&2; exit 1; }
 
+# The D-Bus service registers before the main window has finished building its
+# startup layout. Toggling that early sometimes hits the Editor before it is
+# shown, so startup shows it again and it stays visible. Wait for the window to
+# be mapped, then give the layout a moment to settle.
+timeout 30 xdotool search --sync --onlyvisible --class openscad >/dev/null 2>&1
+sleep 1
+
 # Startup layout with no saved state (MainWindow.cc:4018): Editor visible,
 # Customizer and Viewport-Control hidden, and Console/Error-Log/Font List/
 # Color List/Animate tabified with Console raised. Close everything but the
