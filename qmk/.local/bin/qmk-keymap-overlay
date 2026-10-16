@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Toggle a floating window that shows the QMK keymap cheat sheet.
+set -u
+
+KEYMAP="${QMK_KEYMAP:-/home/turizmo/MEGA/Prosjekter/qmk_firmware/git/keyboards/handwired/dactyl_manuform_turizmo/4x5_turizmo/keymaps/default/keymap.c}"
+IMG="$HOME/.cache/qmk-keymap.png"
+CLASS="qmk-keymap-overlay"
+
+if pkill -f "feh --class $CLASS"; then
+    exit 0
+fi
+
+# Rebuild the image when the keymap is newer than the picture
+if [ ! -f "$IMG" ] || [ "$KEYMAP" -nt "$IMG" ]; then
+    qmk-keymap-render.py "$KEYMAP" "$IMG" >/dev/null || exit 1
+fi
+
+exec feh --class "$CLASS" --title "QMK keymap" --image-bg "#1c1f26" \
+    --geometry 1400x620 --scale-down --hide-pointer "$IMG"
