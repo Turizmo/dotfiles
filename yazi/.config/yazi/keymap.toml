@@ -2,4 +2,5 @@
 prepend_keymap = [        
  {  on = [ "m", "m" ], run = "linemode mtimev2", desc = "Linemode: modified time" }, # custom linemode to show time in iso format
  {  on = [ "c", "z" ], run = "shell 'cd \"$(dirname \"$1\")\" && zip -r \"$(basename \"$1\").zip\" -- \"${@##*/}\"' --confirm", desc = "Zip selected into archive" },
+ {  on = "<C-v>", run = "shell -- ~/.config/yazi/paste-clipboard.sh", desc = "Paste files from system clipboard" },
  ]
