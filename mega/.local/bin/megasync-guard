@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
-# Run MEGAsync only while MEGA's API answers. On networks that block MEGA it
-# would otherwise retry and nag forever. Started from autostart; checks every
-# 5 minutes, starts megasync when MEGA is reachable and quits it when blocked.
+# Run MEGAsync only on networks that do not block MEGA. On a blocking network
+# it would otherwise retry forever, and the host's filter pops up a warning for
+# every attempt. The guard sends no traffic of its own: it reads the network's
+# DNS search domain from /etc/resolv.conf (VirtualBox NAT passes on the host's
+# domain) and quits MEGAsync while that domain is in $blocked.
 # MEGAsync's own "Launch at startup" is the file below; remove it whenever
 # MEGAsync recreates it, so only this guard starts MEGAsync.
-api=https://g.api.mega.co.nz/
+blocked=(guard.local)
 own_autostart=~/.config/autostart/megasync.desktop
 
-reachable() {
-  # Any HTTP answer counts; a block shows up as a TLS or connect error.
-  curl -s -m 10 -o /dev/null "$api"
+on_blocked_network() {
+  local domain
+  for domain in $(awk '$1 == "search" { $1 = ""; print }' /etc/resolv.conf); do
+    [[ " ${blocked[*]} " == *" $domain "* ]] && return 0
+  done
+  return 1
 }
 
 while :; do
   rm -f "$own_autostart"
-  if reachable; then
-    pgrep -x megasync >/dev/null || setsid -f megasync >/dev/null 2>&1
-  else
+  if on_blocked_network; then
     pkill -x megasync
+  else
+    pgrep -x megasync >/dev/null || setsid -f megasync >/dev/null 2>&1
   fi
-  sleep 300
+  sleep 60
 done
