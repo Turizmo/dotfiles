@@ -3,72 +3,74 @@
 # the toolbar and the Console. OpenSCAD is started through openscad-soft, which
 # forces software OpenGL so the preview renders correctly in the VirtualBox VM.
 #
-# Why the layout has to be driven at runtime (build 2026.07.01.fp, git 34a81df5b):
+# How it works (build 2026.10-TEST.fp, git 31f27b75):
 #
-#   * The "view/hide*" settings are write-only in this build. Nothing reads them
-#     back to set dock visibility; they survive only as Preferences defaults and
-#     in the --reset-window-settings key list. Dock visibility comes purely from
-#     "window/state".
+#   * Dock visibility comes only from "window/state", which the MainWindow
+#     constructor hands to QMainWindow::restoreState before the window is shown
+#     (src/gui/MainWindow.cc:308-312, 4034-4048). The "view/hide*" settings are
+#     written but never read.
 #
-#   * "window/state" can never record a hidden dock. MainWindow::eventFilter
-#     (src/gui/MainWindow.cc:1558) calls saveWindowStateOnClose() on every
-#     non-spontaneous QEvent::Close received by a Dock, and that function latches
-#     on a windowStateSaved flag. Hiding the first dock therefore writes the
-#     still-everything-visible layout and blocks all later saves, including the
-#     one at application close.
+#   * In that Qt state every dock is stored as 0xfb, its objectName, then one
+#     flag byte; bit 0 is "visible" (qdockarealayout.cpp, StateFlagVisible).
+#     Restore calls setVisible() from that bit, so a cleared bit means the dock
+#     starts hidden, before the first paint.
 #
-# So: strip the stale "state=" entry to get a deterministic startup layout, then
-# close the unwanted docks over D-Bus. D-Bus also gives a real readiness signal,
-# which the old xdotool version had to approximate with sleeps.
+# So before every launch, set those flag bytes in the saved state: Editor,
+# Error Log, Font List, Color List and Animate hidden, Console shown. Every
+# OpenSCAD process reads the state when it starts, so this also works when an
+# OpenSCAD window is already open. OpenSCAD only writes the state back when its
+# last window closes, and that write is overridden again on the next launch.
 #
-# The D-Bus input driver needs all three of:
-#   [feature] input-driver-dbus=true   (Feature::ExperimentalInputDriverDBus)
-#   [input]   enableDriverDBUS=true    (Settings::inputEnableDriverDBUS, default false)
-#   flatpak override --user --socket=session-bus \
-#       --own-name=org.openscad.OpenSCAD org.openscad.OpenSCAD
+# This replaces closing the docks over D-Bus. A D-Bus toggle sent too early was
+# lost or flipped a dock back on, and the D-Bus name belongs to the first
+# process only, so a second window kept its Editor.
 #
-# This build also has an "AI Chat" dock created without an objectName, so Qt
-# cannot serialise it. Stripping "state=" sidesteps that too.
+# With no saved state (fresh install, --reset-window-settings) the layout in
+# ~/.local/share/openscad-dark/window-state is used as the starting point.
 
 set -u
 
 conf="$HOME/.var/app/org.openscad.OpenSCAD/config/OpenSCAD/OpenSCAD.conf"
-dest=org.openscad.OpenSCAD
-path=/org/openscad/OpenSCAD/Application
+fallback="$HOME/.local/share/openscad-dark/window-state"
 
-call() {
-    gdbus call --session --dest "$dest" --object-path "$path" \
-        --method org.openscad.OpenSCAD."$1" "${@:2}" >/dev/null 2>&1
-}
+mkdir -p "$(dirname "$conf")"
+touch "$conf"
 
-# An instance already running owns the bus name and has its layout set already.
-if call getActions; then
-    setsid nohup "$HOME/.local/bin/openscad-soft" "$1" >/dev/null 2>&1 &
-    exit 0
-fi
+python3 -I - "$conf" "$fallback" <<'PY' || echo "openscad-dark: could not set the window layout" >&2
+import re, sys
 
-[ -f "$conf" ] && sed -i '/^state=@ByteArray/d' "$conf"
+conf, fallback = sys.argv[1:]
+want = {"editorDock": 0, "errorLogDock": 0, "fontListDock": 0,
+        "colorListDock": 0, "animateDock": 0, "consoleDock": 1}
+
+# QSettings writes the state as escaped text: each byte of the UTF-16 name is
+# "\0" plus the character, and a character that could be read as a hex digit
+# after an escape is itself written as "\xNN".
+def name(dock):
+    return "".join("\\0" + ("\\x%x" % ord(c) if c in "0123456789abcdefABCDEF" else c)
+                   for c in dock)
+
+# One escaped byte: \xN or \xNN, a C escape, or a plain character
+byte = r"(\\x[0-9a-fA-F]{1,2}|\\[0abtnvfr\\]|[^\\])"
+
+text = open(conf).read()
+lines = text.split("\n")
+idx = next((i for i, l in enumerate(lines) if l.startswith("state=")), None)
+state = lines[idx][len("state="):] if idx is not None else open(fallback).read().strip()
+
+for dock, visible in want.items():
+    state, n = re.subn(re.escape(name(dock)) + byte,
+                       lambda m: name(dock) + ("\\x1" if visible else "\\0"), state, count=1)
+    if n != 1:
+        sys.exit(f"openscad-dark: {dock} not found in window state")
+
+if idx is not None:
+    lines[idx] = "state=" + state
+elif "[window]" in lines:
+    lines.insert(lines.index("[window]") + 1, "state=" + state)
+else:
+    lines += ["[window]", "state=" + state, ""]
+open(conf, "w").write("\n".join(lines))
+PY
 
 setsid nohup "$HOME/.local/bin/openscad-soft" "$1" >/dev/null 2>&1 &
-
-for _ in $(seq 1 60); do
-    call getActions && break
-    sleep 0.5
-done
-call getActions || { echo "openscad-dark: D-Bus service never appeared" >&2; exit 1; }
-
-# The D-Bus service registers before the main window has finished building its
-# startup layout. Toggling that early sometimes hits the Editor before it is
-# shown, so startup shows it again and it stays visible. Wait for the window to
-# be mapped, then give the layout a moment to settle.
-timeout 30 xdotool search --sync --onlyvisible --class openscad >/dev/null 2>&1
-sleep 1
-
-# Startup layout with no saved state (MainWindow.cc:4018): Editor visible,
-# Customizer and Viewport-Control hidden, and Console/Error-Log/Font List/
-# Color List/Animate tabified with Console raised. Close everything but the
-# Console. These actions are checkable, so each call is a toggle; the starting
-# state is only deterministic because "state=" was stripped above.
-for action in Editor ErrorLog FontList ColorList Animate; do
-    call action "windowActionToggle$action"
-done
