@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=MEGAsync guard
+Comment=Start MEGAsync only when MEGA is reachable
+Exec=megasync-guard
+Terminal=false
+X-GNOME-Autostart-Delay=60

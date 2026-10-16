@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Run MEGAsync only while MEGA's API answers. On networks that block MEGA it
+# would otherwise retry and nag forever. Started from autostart; checks every
+# 5 minutes, starts megasync when MEGA is reachable and quits it when blocked.
+# MEGAsync's own "Launch at startup" is the file below; remove it whenever
+# MEGAsync recreates it, so only this guard starts MEGAsync.
+api=https://g.api.mega.co.nz/
+own_autostart=~/.config/autostart/megasync.desktop
+
+reachable() {
+  # Any HTTP answer counts; a block shows up as a TLS or connect error.
+  curl -s -m 10 -o /dev/null "$api"
+}
+
+while :; do
+  rm -f "$own_autostart"
+  if reachable; then
+    pgrep -x megasync >/dev/null || setsid -f megasync >/dev/null 2>&1
+  else
+    pkill -x megasync
+  fi
+  sleep 300
+done
