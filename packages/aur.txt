@@ -1,0 +1,16 @@
+# AUR packages, installed with yay. One package per line; text after # is ignored.
+
+zen-browser-bin                 # web browser ($BROWSER, i3 $mod+w)
+megasync-bin                    # MEGA sync client (~/MEGA)
+claude-code
+supabase-bin                    # supabase CLI
+orca-slicer-bin                 # 3D printer slicer
+openscad-snapshot-appimage      # OpenSCAD nightly (the flatpak beta is the main one)
+openscad-bosl2-git              # OpenSCAD library
+openhantek6022                  # oscilloscope software
+brlaser                         # Brother laser printer driver
+splix                           # Samsung printer driver (was an EndeavourOS default)
+android-sdk-cmdline-tools-latest
+android-sdk-platform-tools
+android-sdk-build-tools
+android-platform

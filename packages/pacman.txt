@@ -1,0 +1,61 @@
+# Official repo packages installed on top of a default EndeavourOS i3 install.
+# One package per line; text after # is ignored.
+
+# Dotfiles and shell
+stow                    # symlinks the dotfiles packages into ~
+zoxide                  # smarter cd, initialised in .bashrc
+fzf                     # fuzzy finder (nvim, yazi)
+ripgrep                 # grep for nvim telescope
+fd                      # find for nvim telescope / yazi
+entr                    # rerun a command when files change
+ncdu                    # disk usage browser
+7zip                    # compression tool
+sshfs                   # mount Home Assistant config (hamount in .bashrc)
+tailscale               # VPN through the Home Assistant exit node (install.sh tailscale)
+udiskie                 # automount removable drives
+
+# Terminal apps
+neovim
+python-pynvim           # python provider for neovim
+yazi                    # terminal file manager
+lazygit                 # terminal UI for git
+github-cli              # gh
+ghostty                 # terminal emulator
+
+# Desktop / X11 helpers
+xclip                   # X11 clipboard (yazi paste-clipboard.sh)
+xdotool                 # automation tool
+qt5ct                   # system wide Qt5 theme (QT_QPA_PLATFORMTHEME in .bashrc)
+ttf-nerd-fonts-symbols  # icons in the i3 bar (workspace-names.py)
+flatpak
+
+# Apps
+libreoffice-fresh
+obsidian
+chromium                # CHROME_EXECUTABLE for flutter
+prusa-slicer
+gst-plugins-good        # GStreamer plugins
+
+# Development
+nodejs
+npm
+pnpm
+rust                    # openscad-lsp build dependency
+jdk21-openjdk           # android builds
+python-pip
+python-pipx             # qmk CLI
+uv                      # python versions (uv python install)
+python-pandas
+python-ipykernel
+python-jupyter-client
+
+# QMK keyboard firmware toolchain
+avr-gcc
+avr-libc
+avr-binutils
+avrdude
+dfu-programmer
+dfu-util
+
+# System
+zram-generator          # compressed swap in RAM, see system/etc/systemd/zram-generator.conf

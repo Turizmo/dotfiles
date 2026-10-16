@@ -1,2 +1,2 @@
-# Claude Code memory and settings: contains passwords and private project notes
+# Claude Code config and memory: its own private repo (Turizmo/claude-config), cloned here by install.sh
 claude/
