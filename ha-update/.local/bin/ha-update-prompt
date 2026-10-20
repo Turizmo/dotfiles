@@ -8,12 +8,18 @@ test=${1:-}
 . ~/.config/ha.env
 
 stamp=~/.local/state/ha-update-prompt.last
-if [[ $(date +%u) == 5 && $(date +%H) -ge 10 ]]; then
+# 10# so hours 08 and 09 are not read as invalid octal.
+if [[ $(date +%u) == 5 && 10#$(date +%H) -ge 10 ]]; then
   due=$(date -d 'today 10:00' +%s)
 else
   due=$(date -d 'last fri 10:00' +%s)
 fi
 [[ -z $test && $(cat "$stamp" 2>/dev/null || echo 0) -ge $due ]] && exit 0
+
+# Right after boot, Persistent= catch-up fires before X has put DISPLAY in the
+# systemd user env. yad then fails, and the stamp would mark the week done.
+# Exit before the stamp and retry next hour.
+[[ -n ${DISPLAY:-} ]] || exit 0
 
 # Stay quiet when HA is not reachable (PC away from home, Pi down); retry next hour.
 curl -sf -m 10 -o /dev/null -H "Authorization: Bearer $HA_TOKEN" "$HA/api/" || exit 0
