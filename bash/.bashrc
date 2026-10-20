@@ -113,6 +113,22 @@ ha-git() { local tt=; [ -t 0 ] && tt=-t; ssh $tt root@10.0.0.210 "cd /homeassist
 # Mount, then drop claude into the config dir with its CLAUDE.md.
 haclaude() { hamount && (cd ~/ha-config && claude "$@"); }
 
+# Klipper on the Voron Trident (10.0.0.200, user pi). Moonraker API on :7125
+# needs no auth on the LAN. Config repo pushes to GitHub
+# (Turizmo/trident-klipper-config), plus an hourly auto-commit cron on the Pi.
+klmount() { mountpoint -q ~/klipper-config || sshfs pi@10.0.0.200:/home/pi/printer_data/config ~/klipper-config \
+  -o reconnect,idmap=user,ServerAliveInterval=15; }
+klumount() { fusermount3 -u ~/klipper-config; }
+kl-api() { # kl-api GET printer/info | kl-api POST printer/restart
+  local method=$1 path=$2; shift 2
+  curl -sS -X "$method" "http://10.0.0.200:7125/$path" "$@"; }
+kl-restart() { kl-api POST printer/restart; } # reload config; never mid-print
+kl-log() { ssh pi@10.0.0.200 "tail -${1:-50} ~/printer_data/logs/klippy.log"; }
+# Run git on the Pi, not over the mount.
+kl-git() { local tt=; [ -t 0 ] && tt=-t; ssh $tt pi@10.0.0.200 "cd ~/printer_data/config && git $*"; }
+# Mount, then drop claude into the config dir with its CLAUDE.md.
+klipperclaude() { klmount && (cd ~/klipper-config && claude "$@"); }
+
 # Terminal title = name of the running command (e.g. "nvim"), so the i3 bar can
 # show it (see i3/.config/i3/workspace-names.py). /etc/bash.bashrc puts the
 # title back to user@host:dir at each prompt. Keep this block last so it runs

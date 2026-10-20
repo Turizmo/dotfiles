@@ -227,6 +227,7 @@ step_services() {
 	systemctl --user daemon-reload
 	systemctl --user enable --now ha-update-prompt.timer
 	mkdir -p ~/ha-config # sshfs mount point for hamount
+	mkdir -p ~/klipper-config # sshfs mount point for klmount
 }
 
 # Join the tailnet and send all traffic through the Pi (Home Assistant add-on,
