@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Password pop-up for `sudo -A` when there is no terminal to type in
+# (Claude Code's ! prompt). sudo passes its prompt text as $1.
+exec rofi -dmenu -password -p "sudo" -mesg "${1:-Password for $USER}" \
+	-theme-str 'listview { lines: 0; }'

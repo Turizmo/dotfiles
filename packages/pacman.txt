@@ -18,6 +18,7 @@ udiskie                 # automount removable drives
 neovim
 python-pynvim           # python provider for neovim
 yazi                    # terminal file manager
+htop                    # process viewer, zram meter in htop/.config/htop/htoprc
 lazygit                 # terminal UI for git
 github-cli              # gh
 ghostty                 # terminal emulator

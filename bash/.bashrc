@@ -13,6 +13,12 @@ PS1='[\u@\h \W]\$ '
 export EDITOR=nvim
 export VISUAL=nvim
 
+# sudo with no terminal (Claude Code's ! prompt) asks for the password in a rofi pop-up
+export SUDO_ASKPASS="$HOME/.local/bin/sudo-askpass"
+function sudo() {
+  if { : >/dev/tty; } 2>/dev/null; then command sudo "$@"; else command sudo -A "$@"; fi
+}
+
 # Set dark theme for QT apps
 export QT_QPA_PLATFORMTHEME=qt5ct
 
