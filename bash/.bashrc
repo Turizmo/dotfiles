@@ -97,6 +97,9 @@ export PATH="$PATH:/home/turizmo/.local/bin"
 
 # claude-code: Arch wrapper sets DISABLE_UPDATES=1, which also kills plugin auto-update
 export FORCE_AUTOUPDATE_PLUGINS=1
+# /effort saves to settings.json and sticks for every new session. Always start at
+# medium; a later --effort in "$@" still wins.
+claude() { command claude --effort medium "$@"; }
 
 # Home Assistant (10.0.0.210). Token lives in ~/.config/ha.env (chmod 600, not
 # in dotfiles). /config on the Pi is a symlink to /homeassistant, and sshfs
