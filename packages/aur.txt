@@ -14,3 +14,4 @@ android-sdk-cmdline-tools-latest
 android-sdk-platform-tools
 android-sdk-build-tools
 android-platform
+espanso-x11                     # text expander, ;rc types the Claude /compact command

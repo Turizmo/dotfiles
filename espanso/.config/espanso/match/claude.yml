@@ -1,0 +1,7 @@
+# Claude Code shortcuts
+matches:
+  # Compact the Claude Code context down to what the planned work needs
+  - trigger: ";rc"
+    replace: "/compact Keep only the context that is essential or needed to continue the planned work."
+    # Terminals don't paste with Ctrl+V, so type the text instead
+    force_mode: keys
