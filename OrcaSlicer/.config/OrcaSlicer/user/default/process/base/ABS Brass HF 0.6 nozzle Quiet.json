@@ -132,7 +132,8 @@
     "overhang_reverse_threshold": "0%",
     "overhang_speed_classic": "0",
     "post_process": [
-        "python3 /home/turizmo/dotfiles/OrcaSlicer/scripts/resonance_avoid/resonance_avoid.py"
+        "python3 /home/turizmo/dotfiles/OrcaSlicer/scripts/resonance_avoid/resonance_avoid.py",
+        "python3 /home/turizmo/dotfiles/OrcaSlicer/scripts/flow_temp/flow_temp.py"
     ],
     "precise_outer_wall": "0",
     "precise_z_height": "1",

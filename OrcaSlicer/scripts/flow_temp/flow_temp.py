@@ -22,6 +22,10 @@ How it works:
      commanded temperature for the next W seconds changes, at most once per W.
      Other M104 lines in the region are commented out. Feedrates are untouched.
 
+On/off: the script runs only when the filament Notes have a line "flowtemp = 1"
+and resonance_avoidance is on (Orca turns that off in calibration prints).
+Otherwise it leaves the file untouched, so it can sit in every process preset.
+
 Settings (printer Notes, one per line, spaces around '=' optional):
     flowtemp_heat_s_per_c = 0.5     required: seconds to heat the nozzle 1 C
 Filament preset fields: nozzle_temperature_range_low/high,
@@ -96,6 +100,19 @@ def parse_notes(text):
     for m in re.finditer(r"flowtemp_(\w+?)\s*=\s*([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?\d+)?)", text):
         out[m.group(1)] = float(m.group(2))
     return out
+
+
+def enabled(cfg, overrides):
+    """Why the script should skip this file, or None when it should run."""
+    if "flowtemp" in overrides:
+        on = overrides["flowtemp"] == "1"
+    else:
+        on = re.search(r"(?<!\w)flowtemp\s*=\s*1\b", cfg.get("filament_notes", "")) is not None
+    if not on:
+        return "filament Notes have no 'flowtemp = 1'"
+    if first_value(overrides.get("resonance_avoidance", cfg.get("resonance_avoidance", "0"))) != "1":
+        return "resonance_avoidance is off (calibration print)"
+    return None
 
 
 def get_settings(cfg, overrides):
@@ -431,6 +448,10 @@ def process(path, dry_run, overrides):
         print("flow_temp: file already processed, nothing to do")
         return 0
     cfg = read_config(lines)
+    skip = enabled(cfg, overrides)
+    if skip:
+        print(f"flow_temp: {skip}, nothing to do")
+        return 0
     st = get_settings(cfg, overrides)
     (r0, r1), moves, layer2_t, total_t = simulate(lines, st)
     W, nw, avg, target, cmd = plan(moves, layer2_t, total_t, st)

@@ -34,6 +34,15 @@ range from the first `;LAYER_CHANGE` to `; EXECUTABLE_BLOCK_END`.
 
 ## Settings
 
+The script is in the post-processing list of every process preset. It only changes the file when
+both of these are true:
+
+- The filament preset's Notes have the line `flowtemp = 1`. This is the on/off switch.
+- `resonance_avoidance` is on in the process. Orca turns it off in calibration prints, so
+  temperature towers and other tests keep their own temperatures.
+
+Otherwise it prints why it skipped and leaves the file as it is.
+
 Printer settings > Notes:
 
 ```
@@ -59,7 +68,7 @@ flow_temp.py [--dry-run] [--set key=value ...] file.gcode
 
 - `--dry-run`: print the summary and do not write the file.
 - `--set flowtemp_heat_s_per_c=0.4`: override a setting for testing. This also works for filament
-  keys.
+  keys. `--set flowtemp=1` forces the script on, `--set flowtemp=0` off.
 
 If a required value is missing, the script prints an error to stderr and exits 1. The file is not
 changed, and Orca shows the error. The output is written to a temp file and then renamed over the
