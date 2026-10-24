@@ -66,7 +66,7 @@
     "high_current_on_filament_swap": "0",
     "host_type": "octoprint",
     "inherits": "",
-    "layer_change_gcode": ";AFTER_LAYER_CHANGE\n;[layer_z]",
+    "layer_change_gcode": ";AFTER_LAYER_CHANGE\n;[layer_z]\nSET_PRINT_STATS_INFO CURRENT_LAYER={layer_num + 1}",
     "long_retractions_when_cut": [
         "0"
     ],
@@ -77,7 +77,7 @@
         "5000"
     ],
     "machine_max_acceleration_extruding": [
-        "20000",
+        "10000",
         "20000"
     ],
     "machine_max_acceleration_retracting": [
@@ -85,7 +85,7 @@
         "5000"
     ],
     "machine_max_acceleration_travel": [
-        "20000",
+        "10000",
         "20000"
     ],
     "machine_max_acceleration_x": [
@@ -124,11 +124,11 @@
         "25"
     ],
     "machine_max_speed_x": [
-        "400",
+        "300",
         "200"
     ],
     "machine_max_speed_y": [
-        "400",
+        "300",
         "200"
     ],
     "machine_max_speed_z": [
@@ -144,7 +144,7 @@
         "0"
     ],
     "machine_pause_gcode": "PAUSE",
-    "machine_start_gcode": "{ \n    global HEATSOAK = bed_temperature_initial_layer[initial_extruder] * 1.1;\n    global BED = bed_temperature_initial_layer[initial_extruder];\n    global EXTRUDER = first_layer_temperature[initial_extruder];\n}\nNEOPIXEL_DISPLAY LED=rgb_light TYPE=bed_temp MODE=glow ; Enable extruder leds and show bed temperature in logo\n\n{if HEATSOAK < 110}    ; Set the bed to heatsoak, max 110\nM190 S{HEATSOAK}\n{else}\nM190 S110\n{endif}\n\nG28                    ; Home the printer\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\n\n{if BED > 90}       ; Heatsoak the entire printer for enclosed materials like ABS\nG0 X150 Y150 Z280 F600\nM109 S60            ; Enable the hotend to help circulate the air\nTEMPERATURE_WAIT SENSOR=\"temperature_sensor chamber_temp\" MINIMUM=42\n{endif}\n\n\nM140 S{BED}         ; Set the proper bed temperature\nCLEAN_NOZZLE TEMP={EXTRUDER} ; Run macro for cleaning the nozzle\nATTACH_PROBE        ; Attach probe for heat stabilization\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\nM190 S{BED}         ; Wait for proper bed temperature\nM109 S160           ; Set and wait for medium extruder temperature for consistent bed leveling and meshing\nG4 P120000          ; Wait for temperature to stabilize\n\nG90                 ; Use absolute coordinates\nG32                 ; Home the printer and level the bed\nG90\n\n; Probe adaptive bed mesh\nBED_MESH_CALIBRATE ADAPTIVE=1\n\nPRINT_START\n\n; Set and wait for nozzle to reach temperature\nM109 S{EXTRUDER}",
+    "machine_start_gcode": "{ \n    global HEATSOAK = bed_temperature_initial_layer[initial_extruder] * 1.1;\n    global BED = bed_temperature_initial_layer[initial_extruder];\n    global EXTRUDER = first_layer_temperature[initial_extruder];\n}\nNEOPIXEL_DISPLAY LED=rgb_light TYPE=bed_temp MODE=glow ; Enable extruder leds and show bed temperature in logo\n\n; Heatsoak bed (max 110) and, for ABS etc., the chamber. Home. Skipped when already hot.\nHEATSOAK BED={BED} SOAK={HEATSOAK} CHAMBER={if BED > 90}42{else}0{endif}\n\n\nM140 S{BED}         ; Set the proper bed temperature\nCLEAN_NOZZLE TEMP={EXTRUDER} ; Run macro for cleaning the nozzle\nATTACH_PROBE_LOCK   ; Attach probe and keep it on until the mesh is done\nG0 X150 Y150 Z10 F3600  ; Move the hotend to the center\nM190 S{BED}         ; Wait for proper bed temperature\nM109 S160           ; Set and wait for medium extruder temperature for consistent bed leveling and meshing\n_SOAK_SETTLE MS=120000 ; Wait for temperature to stabilize, not after a skipped soak\n\nG90                 ; Use absolute coordinates\nG32                 ; Home the printer and level the bed\nG90\n\n; Probe adaptive bed mesh\nBED_MESH_CALIBRATE ADAPTIVE=1\nDOCK_PROBE_UNLOCK   ; Unlock and dock the probe\n\nPRINT_START\nQUIET_PROFILE ENABLE={if print_preset =~ /.*Quiet.*/}1{else}0{endif} ; X/Y stealthChop for Quiet process presets, after leveling\n\n; Set and wait for nozzle to reach temperature\nM109 S{EXTRUDER}",
     "machine_tool_change_time": "0",
     "machine_unload_filament_time": "0",
     "manual_filament_change": "0",
@@ -209,7 +209,7 @@
     "printhost_user": "",
     "printing_by_object_gcode": "",
     "purge_in_prime_tower": "1",
-    "resonance_avoidance": "0",
+    "resonance_avoidance": "1",
     "retract_before_wipe": [
         "70%"
     ],
