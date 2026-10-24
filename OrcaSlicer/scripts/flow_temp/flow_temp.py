@@ -24,7 +24,6 @@ How it works:
 
 Settings (printer Notes, one per line, spaces around '=' optional):
     flowtemp_heat_s_per_c = 0.5     required: seconds to heat the nozzle 1 C
-    flowtemp_cool_s_per_c = 1.0     optional: seconds to cool 1 C (default = heat)
 Filament preset fields: nozzle_temperature_range_low/high,
 filament_max_volumetric_speed, nozzle_temperature_initial_layer, filament_diameter.
 
@@ -52,19 +51,19 @@ class FlowTempError(Exception):
     pass
 
 
-def window_seconds(heat_s_per_c, cool_s_per_c, t_low, t_high):
+def window_seconds(heat_s_per_c, t_low, t_high):
     """Averaging window W (s).
 
-    W = clamp(WINDOW_FRACTION * max(heat_s_per_c, cool_s_per_c) * (t_high - t_low),
+    W = clamp(WINDOW_FRACTION * heat_s_per_c * (t_high - t_low),
               WINDOW_MIN, WINDOW_MAX)
 
-    The nozzle needs max(heat, cool) * (high - low) seconds for a full swing.
+    The nozzle needs heat * (high - low) seconds for a full swing. Cooling is
+    not used: the script never pre-cools, so only the heating rate matters.
     Flow changes shorter than a quarter of that swing only make the heater chase
     noise it cannot follow, so W is the finest time resolution worth resolving.
     W is also the minimum spacing between emitted M104 lines.
     """
-    slow = max(heat_s_per_c, cool_s_per_c)
-    w = WINDOW_FRACTION * slow * (t_high - t_low)
+    w = WINDOW_FRACTION * heat_s_per_c * (t_high - t_low)
     return min(max(w, WINDOW_MIN), WINDOW_MAX)
 
 
@@ -123,10 +122,9 @@ def get_settings(cfg, overrides):
         "first": num("nozzle_temperature_initial_layer"),
         "fil_d": num("filament_diameter"),
         "heat": notes["heat_s_per_c"],
-        "cool": notes.get("cool_s_per_c", notes["heat_s_per_c"]),
     }
-    if st["heat"] <= 0 or st["cool"] <= 0:
-        raise FlowTempError("flowtemp_heat_s_per_c / flowtemp_cool_s_per_c must be > 0")
+    if st["heat"] <= 0:
+        raise FlowTempError("flowtemp_heat_s_per_c must be > 0")
     if st["high"] < st["low"]:
         raise FlowTempError("nozzle_temperature_range_high < nozzle_temperature_range_low")
     if st["max_flow"] <= 0:
@@ -356,7 +354,7 @@ def plan(moves, layer2_t, total_t, st):
             vol[b] += rate * (hi - lo)
             b += 1
 
-    W = window_seconds(st["heat"], st["cool"], st["low"], st["high"])
+    W = window_seconds(st["heat"], st["low"], st["high"])
     nw = max(1, int(round(W / dt)))
     pre = [0.0] * (nb + 1)
     for i, v in enumerate(vol):
@@ -453,7 +451,7 @@ def process(path, dry_run, overrides):
     temps = list(emits.values()) or [int(round(st["first"]))]
     summary = [
         f"{TAG} START",
-        f"; window_s = {W:.2f}  heat_s_per_c = {st['heat']}  cool_s_per_c = {st['cool']}",
+        f"; window_s = {W:.2f}  heat_s_per_c = {st['heat']}",
         f"; range = {st['low']:.0f}-{st['high']:.0f} C  max_flow = {st['max_flow']} mm3/s  layer1 = {st['first']:.0f} C",
         f"; commanded min/max = {min(temps)}/{max(temps)} C  M104 added = {len(emits)}  M104 commented = {removed}",
         f"; estimated region time = {total_t / 60:.1f} min  peak avg flow = {max(avg):.1f} mm3/s",

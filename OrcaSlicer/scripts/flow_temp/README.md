@@ -23,8 +23,9 @@ The nozzle is already hot when a high-flow section starts. Python 3 stdlib only.
    so the setpoint is never below what is needed. Orca's own `M104` lines in the print (for
    example the one at layer 2) are commented out. Feedrates are not changed.
 
-Window: `W = clamp(0.25 * max(heat_s_per_c, cool_s_per_c) * (high - low), 1 s, 10 s)`.
-A full temperature swing takes `max(heat, cool) * (high - low)` seconds. The nozzle cannot follow
+Window: `W = clamp(0.25 * heat_s_per_c * (high - low), 1 s, 10 s)`.
+A full temperature rise takes `heat * (high - low)` seconds. Cooling is not used, because the
+script never pre-cools. The nozzle cannot follow
 flow changes that are shorter than a quarter of that swing.
 
 The processed part of the file is between `; MZ FLOW TEMP START` (end of machine start G-code) and
@@ -37,11 +38,9 @@ Printer settings > Notes:
 
 ```
 flowtemp_heat_s_per_c = 0.5
-flowtemp_cool_s_per_c = 1.0
 ```
 
 - `flowtemp_heat_s_per_c` (required): seconds for the nozzle to heat 1 °C.
-- `flowtemp_cool_s_per_c` (optional, default = heat): seconds to cool 1 °C. It only affects W.
 
 The other values come from the filament preset (`nozzle_temperature_range_low/high`,
 `filament_max_volumetric_speed`, `nozzle_temperature_initial_layer`, `filament_diameter`).
@@ -71,7 +70,6 @@ original. If the file already has a `; FLOW_TEMP START` summary, the script does
 - Measure `heat_s_per_c`. While printing at a typical flow, set the nozzle from `low` to `high` and
   time the rise. Divide the time by the temperature change. Pick a slower value if unsure: it
   starts the pre-heat earlier.
-- Measure `cool_s_per_c` in the same way, with the part fan as it is while printing.
 - The time estimate is about 3–7 % shorter than Orca's. Real events then come a little later than
   planned, so the pre-heat has a bit of extra lead.
 - The summary comment near the top of the G-code shows W, min/max commanded temperature and the
