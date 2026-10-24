@@ -1,3 +1,0 @@
-Vendored from https://github.com/Yury-MonZon/MZ_Flow_Temp_processor
-Commit 6340550d39191536a523e86f76408f259023e4c0 (2026-06-27), GPL v3.
-Unmodified. Update by copying mz_flow_temp.py from a newer commit.

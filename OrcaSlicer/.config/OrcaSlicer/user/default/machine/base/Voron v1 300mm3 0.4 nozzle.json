@@ -195,7 +195,7 @@
         "Direct Drive Standard"
     ],
     "printer_model": "Voron v1 300mm3",
-    "printer_notes": "mz_flow_temp_sec_per_c_heating = 0.5\nmz_flow_temp_sec_per_c_cooling = 1.0\nmz_flow_temp_launch_viewer = false",
+    "printer_notes": "flowtemp_heat_s_per_c = 0.5\nflowtemp_cool_s_per_c = 1.0",
     "printer_settings_id": "Voron v1 300mm3 0.4 nozzle",
     "printer_structure": "undefine",
     "printer_technology": "FFF",
