@@ -16,6 +16,9 @@ How it works:
   3. target = low + (high - low) * min(avg, max_flow) / max_flow.
      Layer 1 is fixed at nozzle_temperature_initial_layer.
   4. Backward pass: cmd[i] = max(target[i], cmd[i+1] - dt / heat_s_per_c).
+     Then cmd is shifted earlier by heat_delay_s (cmd[i] = max of cmd over
+     [t, t + delay]), because the nozzle barely moves for that long after a
+     new setpoint.
      Heating ramps therefore start early enough to reach the target before
      a high-flow section begins. No pre-cooling: drops just lower the target.
   5. Emit "M104 S<int>" (never M109) before the move where the rounded-up
@@ -28,6 +31,7 @@ Otherwise it leaves the file untouched, so it can sit in every process preset.
 
 Settings (printer Notes, one per line, spaces around '=' optional):
     flowtemp_heat_s_per_c = 0.5     required: seconds to heat the nozzle 1 C
+    flowtemp_heat_delay_s = 3.5     optional: seconds before the nozzle starts to rise (default 0)
 Filament preset fields: nozzle_temperature_range_low/high,
 filament_max_volumetric_speed, nozzle_temperature_initial_layer, filament_diameter.
 
@@ -36,6 +40,7 @@ Python 3 stdlib only.
 """
 
 import bisect
+from collections import deque
 import math
 import os
 import re
@@ -139,9 +144,12 @@ def get_settings(cfg, overrides):
         "first": num("nozzle_temperature_initial_layer"),
         "fil_d": num("filament_diameter"),
         "heat": notes["heat_s_per_c"],
+        "delay": notes.get("heat_delay_s", 0.0),
     }
     if st["heat"] <= 0:
         raise FlowTempError("flowtemp_heat_s_per_c must be > 0")
+    if st["delay"] < 0:
+        raise FlowTempError("flowtemp_heat_delay_s must be >= 0")
     if st["high"] < st["low"]:
         raise FlowTempError("nozzle_temperature_range_high < nozzle_temperature_range_low")
     if st["max_flow"] <= 0:
@@ -405,6 +413,20 @@ def plan(moves, layer2_t, total_t, st):
         need = cmd[i + 1] - step
         if need > cmd[i]:
             cmd[i] = need
+    # Heater delay: a setpoint takes effect delay seconds late, so command at
+    # t what is needed anywhere in [t, t + delay]. Sliding max, O(n).
+    nd = int(round(st["delay"] / dt))
+    if nd > 0:
+        shifted = [0.0] * nb
+        q = deque()
+        for i in range(nb - 1, -1, -1):
+            while q and cmd[q[-1]] <= cmd[i]:
+                q.pop()
+            q.append(i)
+            while q[0] > i + nd:
+                q.popleft()
+            shifted[i] = cmd[q[0]]
+        cmd = shifted
     return W, nw, avg, target, cmd
 
 
@@ -472,7 +494,7 @@ def process(path, dry_run, overrides):
     temps = list(emits.values()) or [int(round(st["first"]))]
     summary = [
         f"{TAG} START",
-        f"; window_s = {W:.2f}  heat_s_per_c = {st['heat']}",
+        f"; window_s = {W:.2f}  heat_s_per_c = {st['heat']}  heat_delay_s = {st['delay']}",
         f"; range = {st['low']:.0f}-{st['high']:.0f} C  max_flow = {st['max_flow']} mm3/s  layer1 = {st['first']:.0f} C",
         f"; commanded min/max = {min(temps)}/{max(temps)} C  M104 added = {len(emits)}  M104 commented = {removed}",
         f"; estimated region time = {total_t / 60:.1f} min  peak avg flow = {max(avg):.1f} mm3/s",

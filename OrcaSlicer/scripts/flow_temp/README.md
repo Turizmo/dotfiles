@@ -17,7 +17,8 @@ The nozzle is already hot when a high-flow section starts. Python 3 stdlib only.
 4. Layer 1 stays at `nozzle_temperature_initial_layer`. Near the end of layer 1, the temperature can
    rise above that value to pre-heat for layer 2. It never goes below it.
 5. A backward pass limits every rise to `1 / heat_s_per_c` °C per second, so each heat-up starts
-   early enough.
+   early enough. Then every command moves `heat_delay_s` earlier, because the nozzle barely moves
+   for that long after a new setpoint.
 6. Inserts `M104 S<int>` (never `M109`) when the needed temperature changes by 1 °C or more. It
    inserts at most one per W seconds. Each value covers the time until the next allowed `M104`,
    so the setpoint is never below what is needed. Orca's own `M104` lines in the print (for
@@ -47,9 +48,12 @@ Printer settings > Notes:
 
 ```
 flowtemp_heat_s_per_c = 0.5
+flowtemp_heat_delay_s = 3.5
 ```
 
-- `flowtemp_heat_s_per_c` (required): seconds for the nozzle to heat 1 °C.
+- `flowtemp_heat_s_per_c` (required): seconds for the nozzle to heat 1 °C once it is rising.
+- `flowtemp_heat_delay_s` (optional, default 0): seconds after a new setpoint before the nozzle
+  starts to rise. Every command is moved this much earlier.
 
 The other values come from the filament preset (`nozzle_temperature_range_low/high`,
 `filament_max_volumetric_speed`, `nozzle_temperature_initial_layer`, `filament_diameter`).
@@ -76,9 +80,10 @@ original. If the file already has a `; FLOW_TEMP START` summary, the script does
 
 ## Tuning
 
-- Measure `heat_s_per_c`. While printing at a typical flow, set the nozzle from `low` to `high` and
-  time the rise. Divide the time by the temperature change. Pick a slower value if unsure: it
-  starts the pre-heat earlier.
+- Measure the heat-up during a flow-temp print: log `extruder` temperature and target from
+  Moonraker every 0.25 s. For each target rise, take the time until the nozzle is within 0.5 °C.
+  Fit `time = heat_delay_s + heat_s_per_c * rise`. The Revo HF 0.6 measured 3.7 s + 0.35 s/°C
+  (58 rises up to 10 °C, 2026-10-25). Round up if unsure: it starts the pre-heat earlier.
 - The time estimate is about 3–7 % shorter than Orca's. Real events then come a little later than
   planned, so the pre-heat has a bit of extra lead.
 - The summary comment near the top of the G-code shows W, min/max commanded temperature and the
