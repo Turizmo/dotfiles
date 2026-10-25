@@ -14,6 +14,9 @@
     "filament_settings_id": [
         "eSUN PLA+ 0.6 brass HF nozzle"
     ],
+    "filament_shrink": [
+        "99.6%"
+    ],
     "filament_start_gcode": [
         "; filament start gcode\n\n{\nglobal Z_OFFSET= 0.01;\n}\nSET_GCODE_OFFSET Z={Z_OFFSET} MOVE=1\nRESPOND TYPE=command MSG='z offset = {Z_OFFSET}'"
     ],
