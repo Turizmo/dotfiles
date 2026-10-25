@@ -9,7 +9,7 @@
         "eSUN PLA+ 0.6 brass HF nozzle"
     ],
     "filament_start_gcode": [
-        "; filament start gcode\n\n{\nglobal Z_OFFSET= 0.065;\n}\nSET_GCODE_OFFSET Z={Z_OFFSET} MOVE=1\nRESPOND TYPE=command MSG='z offset = {Z_OFFSET}'"
+        "; filament start gcode\n\n{\nglobal Z_OFFSET= -0.09;\n}\nSET_GCODE_OFFSET Z={Z_OFFSET} MOVE=1\nRESPOND TYPE=command MSG='z offset = {Z_OFFSET}'"
     ],
     "from": "User",
     "inherits": "eSUN PLA+ @System",
